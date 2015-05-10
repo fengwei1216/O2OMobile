@@ -32,6 +32,7 @@
 package com.fengwei.paotui.Model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.BeeFramework.model.BaseModel;
 import com.BeeFramework.model.BeeCallback;
@@ -73,6 +74,7 @@ public class LocationInfoModel extends BaseModel {
                         if(response.succeed == 1) {
                         	if(response.location != null && response.location.name != null) {
                                 publicLocationName = response.location.name;
+                                Log.d("publiclocationname",publicLocationName);
                         	}
                         	LocationInfoModel.this.OnMessageResponse(url,jo,status);
                         } else {

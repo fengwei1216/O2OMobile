@@ -122,20 +122,24 @@ public class LocationManager implements BDLocationListener
 
         latitude = bdLocation.getLatitude();
         longitude = bdLocation.getLongitude();
+        //Log.d("lat",latitude+"");
+        //Log.d("lon",longitude+"");
         
         if (latitude > 1 && longitude > 1)
         {
         	editor.putFloat("latitude", (float) latitude);
             editor.putFloat("longitude", (float) longitude);
             editor.commit();
+            //String loc = getLocation(latitude,longitude);
+            //Log.d("loc",loc);
         }
         else
         {
             if (mLocationClient.isStarted())
             {
 
-               // int result =mLocationClient.requestOfflineLocation();
-              // Log.d("LocSDK3", "result:" + result);
+              int result =mLocationClient.requestOfflineLocation();
+              Log.d("LocSDK3", "result:" + result);
 
             }
             else

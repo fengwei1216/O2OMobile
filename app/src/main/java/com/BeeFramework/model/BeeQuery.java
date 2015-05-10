@@ -50,7 +50,7 @@ public class BeeQuery<T> extends AQuery {
 	
 	public static int environment() 
 	{
-		return ENVIROMENT_PRODUCTION;
+		return ENVIROMENT_DEVELOPMENT;
 	}
 	
 	public static String serviceUrl()
