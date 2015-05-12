@@ -44,8 +44,6 @@ import com.BeeFramework.AppConst;
 import com.BeeFramework.BeeFrameworkApp;
 import com.BeeFramework.Utils.CustomExceptionHandler;
 import com.BeeFramework.model.BeeQuery;
-import com.baidu.android.pushservice.PushConstants;
-import com.baidu.android.pushservice.PushManager;
 import com.fengwei.paotui.Config;
 import com.fengwei.paotui.PaotuiAppConst;
 
@@ -88,7 +86,7 @@ public class MainActivity extends BaseActivity implements Config{
     {
         super.onStart();
 
-        PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, API_KEY);
+        //PushManager.startWork(getApplicationContext(), PushConstants.LOGIN_TYPE_API_KEY, API_KEY);
 
     }
 
@@ -128,9 +126,9 @@ public class MainActivity extends BaseActivity implements Config{
     protected void onNewIntent(Intent intent) {
         // 如果要统计Push引起的用户使用应用情况，请实现本方法，且加上这一个语句
 
-        setIntent(intent);
+        //setIntent(intent);
 
-        handleIntent(intent);
+        //handleIntent(intent);
 
     }
 
