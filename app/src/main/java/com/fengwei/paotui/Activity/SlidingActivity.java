@@ -21,6 +21,7 @@ import com.fengwei.paotui.Fragment.RightFragment;
 import com.fengwei.paotui.Fragment.SlidingMenu;
 import com.fengwei.paotui.MessageConstant;
 import com.fengwei.paotui.R;
+import com.umeng.message.PushAgent;
 
 public class SlidingActivity extends FragmentActivity {
 	
@@ -54,8 +55,11 @@ public class SlidingActivity extends FragmentActivity {
 		super.onCreate(arg0);
 		setContentView(R.layout.main);
         handleIntent(getIntent());
-		
+
 		init();
+        //umeng push
+        PushAgent mPushAgent = PushAgent.getInstance(this);
+        mPushAgent.enable();
 		
 		mShared = this.getSharedPreferences(PaotuiAppConst.USERINFO, 0);
         mEditor = mShared.edit();

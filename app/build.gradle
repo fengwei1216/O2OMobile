@@ -22,4 +22,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/locSDK_5.1.jar')
     compile files('libs/pushservice-4.4.0.71.jar')
+    compile files('libs/com.umeng.message.lib_v2.2.0.jar')
 }
