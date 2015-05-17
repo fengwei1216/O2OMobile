@@ -175,6 +175,10 @@
                 android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name="com.fengwei.paotui.Activity.F10_ApplyActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
                 android:name="com.fengwei.paotui.Activity.F8_ReviewActivity"
                 android:screenOrientation="portrait">
         </activity>

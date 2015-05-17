@@ -3,6 +3,7 @@ package com.fengwei.paotui.Activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -49,8 +50,9 @@ public class SlidingActivity extends FragmentActivity {
 	
 	private     SharedPreferences mShared;
     private     SharedPreferences.Editor mEditor;
+    private PushAgent mPushAgent;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.main);
@@ -58,9 +60,10 @@ public class SlidingActivity extends FragmentActivity {
 
 		init();
         //umeng push
-        PushAgent mPushAgent = PushAgent.getInstance(this);
+        mPushAgent = PushAgent.getInstance(this);
         mPushAgent.enable();
-		
+		//mPushAgent.addAlias("uid", "3");
+        new AddAliasTask("3","uid").execute();
 		mShared = this.getSharedPreferences(PaotuiAppConst.USERINFO, 0);
         mEditor = mShared.edit();
         EventBus.getDefault().register(this);
@@ -177,5 +180,32 @@ public class SlidingActivity extends FragmentActivity {
         {
             finish();
         }
+    }
+
+    class AddAliasTask extends AsyncTask<Void, Void, Boolean> {
+
+        String alias;
+        String aliasType;
+
+        public AddAliasTask(String aliasString,String aliasTypeString) {
+            // TODO Auto-generated constructor stub
+            this.alias = aliasString;
+            this.aliasType = aliasTypeString;
+        }
+
+        protected Boolean doInBackground(Void... params) {
+            try {
+                return mPushAgent.addAlias(alias, aliasType);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+
     }
 }

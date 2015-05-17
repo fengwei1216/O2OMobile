@@ -37,6 +37,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,13 +46,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.BeeFramework.Utils.Utils;
 import com.BeeFramework.model.BusinessResponse;
 import com.BeeFramework.view.RoundedWebImageView;
+import com.BeeFramework.view.ToastView;
 import com.external.androidquery.callback.AjaxStatus;
 import com.external.eventbus.EventBus;
 import com.fengwei.paotui.Activity.F0_ProfileActivity;
+import com.fengwei.paotui.Activity.F10_ApplyActivity;
 import com.fengwei.paotui.Activity.SlidingActivity;
 import com.fengwei.paotui.Paotui;
 import com.fengwei.paotui.PaotuiAppConst;
@@ -59,6 +63,7 @@ import com.fengwei.paotui.MessageConstant;
 import com.fengwei.paotui.Model.MessageUnreadCountModel;
 import com.fengwei.paotui.Model.UserBalanceModel;
 import com.fengwei.paotui.Protocol.ApiInterface;
+import com.fengwei.paotui.Protocol.ENUM_USER_GROUP;
 import com.fengwei.paotui.Protocol.USER;
 import com.fengwei.paotui.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -203,16 +208,32 @@ public class A2_MenuFragment extends Fragment implements OnClickListener, Busine
 			}
 			break;
 		case R.id.left_order_receiving:
-			changeTextColor(mOrderReceiving);
-			if(publucLastSelectedMenu == R.id.left_order_receiving) {
-				if (getActivity() instanceof SlidingActivity) {
-	                SlidingActivity slidingActivity = (SlidingActivity) getActivity();
-	                slidingActivity.showLeft();
-	            }
-			} else {
-                mReceivedOrderListFragment = new E2_ReceivedOrdersFragment();
-	            switchFragment((Fragment) mReceivedOrderListFragment, true);
-			}
+            changeTextColor(mOrderReceiving);
+            if(mUser!=null){
+                if(mUser.user_group == ENUM_USER_GROUP.NEWBEE.value()){
+                    Intent intent = new Intent(getActivity(), F10_ApplyActivity.class);
+                    startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
+                    break;
+                }else if(mUser.user_group == ENUM_USER_GROUP.FREEMAN_INREVIEW.value()){
+                    ToastView toast = new ToastView(getActivity(),getString(R.string.freeman_audit_info));
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                    break;
+                }else{
+                    if(publucLastSelectedMenu == R.id.left_order_receiving) {
+                        if (getActivity() instanceof SlidingActivity) {
+                            SlidingActivity slidingActivity = (SlidingActivity) getActivity();
+                            slidingActivity.showLeft();
+                        }
+                    } else {
+                        mReceivedOrderListFragment = new E2_ReceivedOrdersFragment();
+                        switchFragment((Fragment) mReceivedOrderListFragment, true);
+                    }
+                }
+            }
+
+
 			break;
 		case R.id.left_message:
 			changeTextColor(mMessage);
@@ -386,6 +407,12 @@ public class A2_MenuFragment extends Fragment implements OnClickListener, Busine
                     mUser.fromJson(userJson);
                     publicImageLoader.displayImage(mUser.avatar.thumb, mAvatar, Paotui.options_head);
                     mUserName.setText(Utils.replaceBlank(mUser.nickname));
+                    //增加申请服务商
+                    if(mUser.user_group== ENUM_USER_GROUP.NEWBEE.value()){
+                        mOrderReceivingText.setText(getString(R.string.apply_freeman));
+                    }else if(mUser.user_group==ENUM_USER_GROUP.FREEMAN_INREVIEW.value()){
+                        mOrderReceivingText.setText(getString(R.string.freeman_audit));
+                    }
 
                 }
             }
@@ -453,6 +480,12 @@ public class A2_MenuFragment extends Fragment implements OnClickListener, Busine
 				mUser.fromJson(userJson);
 				publicImageLoader.displayImage(mUser.avatar.thumb, mAvatar, Paotui.options_head);
 				mUserName.setText(Utils.replaceBlank(mUser.nickname));
+                //增加申请服务商
+                if(mUser.user_group== ENUM_USER_GROUP.NEWBEE.value()){
+                    mOrderReceivingText.setText(getString(R.string.apply_freeman));
+                }else if(mUser.user_group==ENUM_USER_GROUP.FREEMAN_INREVIEW.value()){
+                    mOrderReceivingText.setText(getString(R.string.freeman_audit));
+                }
 
 			}
 		} catch (JSONException e) {
