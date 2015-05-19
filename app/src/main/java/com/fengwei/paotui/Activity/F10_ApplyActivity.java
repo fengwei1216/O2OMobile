@@ -3,9 +3,12 @@ package com.fengwei.paotui.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,11 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.BeeFramework.Utils.ImageUtil;
 import com.BeeFramework.activity.BaseActivity;
 import com.BeeFramework.activity.WebViewActivity;
 import com.BeeFramework.model.BusinessResponse;
 import com.BeeFramework.view.ToastView;
 import com.external.androidquery.callback.AjaxStatus;
+import com.external.eventbus.EventBus;
 import com.fengwei.paotui.Model.UserModel;
 import com.fengwei.paotui.PaotuiAppConst;
 import com.fengwei.paotui.Protocol.ENUM_USER_GENDER;
@@ -218,7 +223,17 @@ public class F10_ApplyActivity extends BaseActivity implements BusinessResponse,
 
     @Override
     public void OnMessageResponse(String url, JSONObject jo, AjaxStatus status) throws JSONException {
-
+        if(url.endsWith("/user/certify")) {
+            Message msg = new Message();
+            msg.what = 3;
+            EventBus.getDefault().post(msg);
+            ToastView toast = new ToastView(this, "申请已提交审核");
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            Intent intent = new Intent(this, SlidingActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void showDialog(){
@@ -246,7 +261,7 @@ public class F10_ApplyActivity extends BaseActivity implements BusinessResponse,
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 intent.putExtra("output", imageuri);
                 intent.putExtra("return-data", false);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQUEST_CAMERA);
             }
         });
         requestPhotoLayout.setOnClickListener(new View.OnClickListener() {
@@ -254,10 +269,64 @@ public class F10_ApplyActivity extends BaseActivity implements BusinessResponse,
             public void onClick(View v) {
                 dialog.dismiss();
                 Intent picture = new Intent("android.intent.action.PICK", MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(picture, 2);
+                startActivityForResult(picture, REQUEST_PHOTO);
             }
         });
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == -1) {
+            if(requestCode == REQUEST_CAMERA) {
+                File files = new File(fileName);
+                if(files.exists()) {
+                    imagePath = fileName;
+                    imagePath = startPhotoZoom(Uri.fromFile(new File(imagePath)));
+                }
+                return;
+            }
+            if(requestCode == REQUEST_PHOTO) {
+                Uri selectedImage = data.getData();
+                imagePath = startPhotoZoom(selectedImage);
+                return;
+            }
+            if(requestCode == REQUEST_PHOTOZOOM) {
+                File f = new File(imagePath);
+                if(f.exists()) {
+                    imageFile = new File(ImageUtil.zoomImage(imagePath, 0x15e));
+                    Bitmap previewBitmap = BitmapFactory.decodeFile(imagePath);
+                    avatarPreview.setImageBitmap(previewBitmap);
+                    return;
+                }
+                ToastView toast = new ToastView(this, "\u56fe\u7247\u4e0d\u5b58\u5728");
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+        }
+    }
+
+    private String startPhotoZoom(Uri uri) {
+        if(fileDir2 == null) {
+            fileDir2 = new File(PaotuiAppConst.FILEPATH + "img/");
+            if(!fileDir2.exists()) {
+                fileDir2.mkdirs();
+            }
+        }
+        String fileName = PaotuiAppConst.imageName();
+        String filePath = fileDir2 + fileName;
+        File loadingFile = new File(filePath);
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 400);
+        intent.putExtra("aspectY", 400);
+        intent.putExtra("output", Uri.fromFile(loadingFile));
+        intent.putExtra("outputFormat", "PNG");
+        intent.putExtra("noFaceDetection", true);
+        intent.putExtra("return-data", false);
+        startActivityForResult(intent, REQUEST_PHOTOZOOM);
+        return filePath;
     }
 
 
