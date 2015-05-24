@@ -294,12 +294,12 @@ public class F10_ApplyActivity extends BaseActivity implements BusinessResponse,
             if(requestCode == REQUEST_PHOTOZOOM) {
                 File f = new File(imagePath);
                 if(f.exists()) {
-                    imageFile = new File(ImageUtil.zoomImage(imagePath, 0x15e));
+                    imageFile = new File(ImageUtil.zoomImage(imagePath, 350));
                     Bitmap previewBitmap = BitmapFactory.decodeFile(imagePath);
                     avatarPreview.setImageBitmap(previewBitmap);
                     return;
                 }
-                ToastView toast = new ToastView(this, "\u56fe\u7247\u4e0d\u5b58\u5728");
+                ToastView toast = new ToastView(this, "图片不存在");
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }

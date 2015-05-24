@@ -17,12 +17,16 @@ import com.BeeFramework.view.ToastView;
 import com.external.eventbus.EventBus;
 import com.fengwei.paotui.Fragment.A0_HomeFragment;
 import com.fengwei.paotui.Fragment.A2_MenuFragment;
-import com.fengwei.paotui.PaotuiAppConst;
 import com.fengwei.paotui.Fragment.RightFragment;
 import com.fengwei.paotui.Fragment.SlidingMenu;
 import com.fengwei.paotui.MessageConstant;
+import com.fengwei.paotui.PaotuiAppConst;
+import com.fengwei.paotui.Protocol.USER;
 import com.fengwei.paotui.R;
 import com.umeng.message.PushAgent;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SlidingActivity extends FragmentActivity {
 	
@@ -39,7 +43,8 @@ public class SlidingActivity extends FragmentActivity {
     public static final String CUSTOM_CONTENT ="CustomContent";
 
     public static final String ACTION_SHOW_MESSAGE_LIST = "ACTION_SHOW_MESSAGE_LIST";
-    
+
+    public USER user ;
 	
 	private SlidingMenu mSlidingMenu;
 	private A2_MenuFragment mA2MenuFragment;
@@ -63,9 +68,14 @@ public class SlidingActivity extends FragmentActivity {
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.enable();
 		//mPushAgent.addAlias("uid", "3");
-        new AddAliasTask("3","uid").execute();
+
 		mShared = this.getSharedPreferences(PaotuiAppConst.USERINFO, 0);
         mEditor = mShared.edit();
+        user = getUserInfo();
+        if(user!=null){
+            new AddAliasTask(user.id+"","uid").execute();
+        }
+
         EventBus.getDefault().register(this);
 	}
 
@@ -182,6 +192,25 @@ public class SlidingActivity extends FragmentActivity {
         }
     }
 
+    public USER getUserInfo(){
+        String userStr = mShared.getString("user", "");
+        try {
+            if (userStr != null) {
+                JSONObject userJson = new JSONObject(userStr);
+
+                USER mUser = new USER();
+                mUser.fromJson(userJson);
+                return mUser;
+            }else{
+                return  null;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     class AddAliasTask extends AsyncTask<Void, Void, Boolean> {
 
         String alias;
@@ -195,6 +224,7 @@ public class SlidingActivity extends FragmentActivity {
 
         protected Boolean doInBackground(Void... params) {
             try {
+                //mPushAgent.removeAlias("3","uid");
                 return mPushAgent.addAlias(alias, aliasType);
             } catch (Exception e) {
                 e.printStackTrace();
