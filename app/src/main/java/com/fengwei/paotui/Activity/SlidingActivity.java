@@ -24,6 +24,7 @@ import com.fengwei.paotui.PaotuiAppConst;
 import com.fengwei.paotui.Protocol.USER;
 import com.fengwei.paotui.R;
 import com.umeng.message.PushAgent;
+import com.umeng.update.UmengUpdateAgent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +66,7 @@ public class SlidingActivity extends FragmentActivity {
 
 		init();
         //umeng push
+        UmengUpdateAgent.update(this);
         mPushAgent = PushAgent.getInstance(this);
         mPushAgent.enable();
 		//mPushAgent.addAlias("uid", "3");
